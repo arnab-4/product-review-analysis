@@ -12,7 +12,7 @@ model = None
 def load_model():
     global model
     try:
-        model_path = 'model/naive_bayes.pkl'
+        model_path = 'model/model.pkl'
         if os.path.exists(model_path):
             model = joblib.load(model_path)
             print("✅ Loaded actual ML model")

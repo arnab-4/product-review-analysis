@@ -141,17 +141,4 @@ Frontend will run on `http://localhost:5173` (or similar)
 
 ---
 
-## 📜 License
 
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## 👤 Author
-
-* **Arnab Manna**
-* [Portfolio](https://arnab-portfolio-v2.vercel.app)
-* [GitHub](https://github.com/arnab-4)
-* [LinkedIn](https://www.linkedin.com/in/arnab-manna-442586240/)
-
----
