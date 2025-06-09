@@ -1,3 +1,4 @@
+
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Star, BarChart3 } from "lucide-react";
 import { useState } from "react";
@@ -9,6 +10,7 @@ import ReviewForm from "@/components/ReviewForm";
 import SentimentChart from "@/components/SentimentChart";
 import ProductInsights from "@/components/ProductInsights";
 import ReviewAnalysisModal from "@/components/ReviewAnalysisModal";
+import ProductReviewChatbot from "@/components/ProductReviewChatbot";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -260,7 +262,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* Analysis Modal */}
+      {/* Review Analysis Modal */}
       {selectedReview && (
         <ReviewAnalysisModal
           review={selectedReview}
@@ -268,6 +270,12 @@ const ProductDetails = () => {
           onClose={closeModal}
         />
       )}
+
+      {/* Product Review Chatbot */}
+      <ProductReviewChatbot 
+        productId={product.id} 
+        productName={product.name} 
+      />
     </div>
   );
 };

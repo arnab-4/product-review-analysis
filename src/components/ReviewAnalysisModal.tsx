@@ -116,7 +116,7 @@ const ReviewAnalysisModal = ({ review, isOpen, onClose }: ReviewAnalysisModalPro
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                 <Cpu className="w-5 h-5 text-gray-600" />
                 <div className="flex-1">
-                  <span className="text-sm text-slate-700 font-medium">ML Model (BiLSTM Model):</span>
+                  <span className="text-sm text-slate-700 font-medium">ML Model (Naive Bayes):</span>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
                       review.ml_sentiment === 'positive' 

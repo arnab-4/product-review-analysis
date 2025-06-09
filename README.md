@@ -1,144 +1,73 @@
-# 🛍️ Product Review Analysis with AI & Web Interface
+# Welcome to your Lovable project
 
-A full-stack web application that uses **Machine Learning** and **Natural Language Processing (NLP)** to analyze product reviews. This project classifies customer feedback as **Positive**, **Negative**, or **Neutral**, giving businesses actionable insights through an intuitive web interface.
+## Project info
 
----
+**URL**: https://lovable.dev/projects/5b4eefa8-9975-4efb-9d93-72e321b830be
 
-## 📂 Project Structure
+## How can I edit this code?
 
-```
-├── public/                  # Static assets
-├── server/                 # Python backend with ML model
-│   ├── model/
-│   │   ├── naive_bayes.pkl  # Trained sentiment analysis model
-│   │   └── .gitkeep
-│   ├── app.py               # Flask API serving predictions
-│   ├── requirements.txt     # Python dependencies
-│   └── README.md
-├── src/                    # Frontend source files
-├── supabase/               # Optional Supabase integration (if used)
-├── index.html              # Entry point HTML file
-├── tailwind.config.ts      # Tailwind CSS configuration
-├── vite.config.ts          # Vite build config
-├── package.json            # Project metadata and scripts
-├── README.md               # Project documentation (this file)
-```
+There are several ways of editing your application.
 
----
+**Use Lovable**
 
-## 🚀 Features
+Simply visit the [Lovable Project](https://lovable.dev/projects/5b4eefa8-9975-4efb-9d93-72e321b830be) and start prompting.
 
-* 🧠 AI/ML-powered **sentiment classification**
-* 📈 Dynamic UI to input and analyze review texts
-* ⚡ Fast predictions with a Flask-based API
-* 💬 Simple and clean design using **Tailwind CSS**
-* 🔁 Real-time API communication via `fetch` or `Axios`
-* 🔒 Optionally extendable with **Supabase** backend
+Changes made via Lovable will be committed automatically to this repo.
 
----
+**Use your preferred IDE**
 
-## 🛠️ Tech Stack
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-### Frontend
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-* **Vite**
-* **TypeScript**
-* **Tailwind CSS**
-* **HTML / JavaScript**
+Follow these steps:
 
-### Backend
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-* **Python 3.10+**
-* **Flask**
-* **scikit-learn**
-* **BiLSTM Model**
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
+# Step 3: Install the necessary dependencies.
+npm i
 
-
----
-
-## 🧪 Model Details
-
-* Model: `BiLSTM Model`
-* Accuracy: \~86%
-* Vectorizer: `TfidfVectorizer`
-* Trained on: Product review dataset
-* Serialized with: `joblib`
-
----
-
-## 🖥️ How to Run
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/product-review-analysis.git
-cd product-review-analysis
-```
-
----
-
-### 2. Backend Setup (Python - Flask)
-
-```bash
-cd server
-python -m venv venv
-source venv/bin/activate   # or `venv\Scripts\activate` on Windows
-pip install -r requirements.txt
-python app.py
-```
-
-By default, the backend will run on `http://localhost:5000`
-
----
-
-### 3. Frontend Setup (Vite + Tailwind)
-
-```bash
-cd ..
-npm install
+# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-Frontend will run on `http://localhost:5173` (or similar)
+**Edit a file directly in GitHub**
 
----
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-## 🔄 API Endpoint
+**Use GitHub Codespaces**
 
-**POST** `/predict`
-**URL:** `http://localhost:5000/predict`
-**Body:**
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-```json
-{
-  "text": "The product quality is amazing!"
-}
-```
+## What technologies are used for this project?
 
-**Response:**
+This project is built with:
 
-```json
-{
-  "prediction": "positive"
-}
-```
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
----
+## How can I deploy this project?
 
-## 📸 Screenshots
+Simply open [Lovable](https://lovable.dev/projects/5b4eefa8-9975-4efb-9d93-72e321b830be) and click on Share -> Publish.
 
-> *(Insert screenshots of the UI and prediction results here)*
+## Can I connect a custom domain to my Lovable project?
 
----
+Yes, you can!
 
-## ✨ Future Enhancements
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-* Integrate support for multiple languages
-* Use advanced models (e.g., BERT, LSTM)
-* Add visualizations like word clouds or sentiment graphs
-* Save user feedback using Supabase / Firebase
-
----
-
-
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
