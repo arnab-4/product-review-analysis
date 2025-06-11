@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Star, BarChart3 } from "lucide-react";
 import { useState } from "react";
@@ -56,6 +55,9 @@ const ProductDetails = () => {
   const positivePercentage = product.total_reviews > 0 
     ? Math.round((product.good_reviews / product.total_reviews) * 100) 
     : 0;
+
+  // Calculate neutral reviews count from actual reviews data
+  const neutralReviewsCount = reviews?.filter(review => review.sentiment === 'neutral').length || 0;
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, index) => (
@@ -169,7 +171,8 @@ const ProductDetails = () => {
             <div className="lg:col-span-1">
               <SentimentChart 
                 goodReviews={product.good_reviews || 0} 
-                badReviews={product.bad_reviews || 0} 
+                badReviews={product.bad_reviews || 0}
+                neutralReviews={neutralReviewsCount}
               />
             </div>
           )}

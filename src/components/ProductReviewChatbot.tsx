@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, Send, Bot, User, X, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +24,60 @@ interface ProductReviewChatbotProps {
   productId: string;
   productName: string;
 }
+
+// Component to render markdown-style formatting
+const MarkdownMessage = ({ content }: { content: string }) => {
+  const renderContent = () => {
+    // Split content by lines
+    const lines = content.split('\n');
+    const elements: JSX.Element[] = [];
+    
+    lines.forEach((line, index) => {
+      if (line.trim() === '') {
+        elements.push(<br key={`br-${index}`} />);
+      } else if (line.startsWith('**') && line.endsWith(':**')) {
+        // Headers like **📊 Review Summary:**
+        const headerText = line.replace(/\*\*/g, '');
+        elements.push(
+          <div key={index} className="font-bold text-slate-800 mt-3 mb-2 text-sm">
+            {headerText}
+          </div>
+        );
+      } else if (line.startsWith('* **') || line.startsWith('• **')) {
+        // Bold bullet points like * **Overwhelmingly Positive:**
+        const bulletText = line.replace(/^[*•]\s*/, '').replace(/\*\*/g, '');
+        elements.push(
+          <div key={index} className="flex items-start gap-2 mb-1">
+            <span className="text-blue-600 mt-1">•</span>
+            <span className="text-xs leading-relaxed">
+              <span className="font-semibold">{bulletText}</span>
+            </span>
+          </div>
+        );
+      } else if (line.startsWith('* ') || line.startsWith('• ')) {
+        // Regular bullet points
+        const bulletText = line.replace(/^[*•]\s*/, '');
+        elements.push(
+          <div key={index} className="flex items-start gap-2 mb-1">
+            <span className="text-blue-600 mt-1">•</span>
+            <span className="text-xs leading-relaxed">{bulletText}</span>
+          </div>
+        );
+      } else if (line.trim()) {
+        // Regular text
+        elements.push(
+          <div key={index} className="text-xs leading-relaxed mb-2">
+            {line}
+          </div>
+        );
+      }
+    });
+    
+    return elements;
+  };
+
+  return <div className="space-y-1">{renderContent()}</div>;
+};
 
 const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -144,7 +197,7 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
 
       {/* Chatbot Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-40 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-24 right-6 z-40 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-t-2xl">
             <div className="flex items-center gap-3">
@@ -171,30 +224,48 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
                   </div>
                 )}
                 
-                <div className={`max-w-[80%] ${message.type === 'user' ? 'order-1' : 'order-2'}`}>
+                <div className={`max-w-[85%] ${message.type === 'user' ? 'order-1' : 'order-2'}`}>
                   <div
-                    className={`p-3 rounded-2xl ${
+                    className={`p-4 rounded-2xl ${
                       message.type === 'user'
                         ? 'bg-blue-600 text-white ml-auto'
-                        : 'bg-slate-100 text-slate-800'
+                        : 'bg-slate-50 text-slate-800 border border-slate-200'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    {message.type === 'bot' ? (
+                      <MarkdownMessage content={message.content} />
+                    ) : (
+                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    )}
                   </div>
                   
                   {message.metadata && (
-                    <div className="mt-2 p-2 bg-slate-50 rounded-lg border text-xs">
-                      <div className="flex items-center gap-1 mb-1">
-                        <BarChart3 size={12} />
-                        <span className="font-medium">Analysis Summary</span>
+                    <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 text-xs">
+                      <div className="flex items-center gap-1 mb-2">
+                        <BarChart3 size={14} className="text-blue-600" />
+                        <span className="font-semibold text-blue-800">Analysis Summary</span>
                       </div>
-                      <div className="space-y-1 text-slate-600">
-                        <div>Reviews analyzed: {message.metadata.reviewsAnalyzed}</div>
-                        <div>Average rating: {message.metadata.averageRating}/5</div>
+                      <div className="grid grid-cols-2 gap-2 text-slate-700">
+                        <div className="bg-white rounded px-2 py-1">
+                          <span className="font-medium">Reviews:</span> {message.metadata.reviewsAnalyzed}
+                        </div>
+                        <div className="bg-white rounded px-2 py-1">
+                          <span className="font-medium">Rating:</span> {message.metadata.averageRating}/5
+                        </div>
                         {message.metadata.sentimentBreakdown && (
-                          <div>
-                            Sentiment: {message.metadata.sentimentBreakdown.positive} positive, {message.metadata.sentimentBreakdown.negative} negative, {message.metadata.sentimentBreakdown.neutral} neutral
-                          </div>
+                          <>
+                            <div className="bg-green-50 text-green-700 rounded px-2 py-1">
+                              <span className="font-medium">👍 Positive:</span> {message.metadata.sentimentBreakdown.positive}
+                            </div>
+                            <div className="bg-red-50 text-red-700 rounded px-2 py-1">
+                              <span className="font-medium">👎 Negative:</span> {message.metadata.sentimentBreakdown.negative}
+                            </div>
+                            {message.metadata.sentimentBreakdown.neutral > 0 && (
+                              <div className="bg-gray-50 text-gray-700 rounded px-2 py-1 col-span-2">
+                                <span className="font-medium">😐 Neutral:</span> {message.metadata.sentimentBreakdown.neutral}
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
@@ -214,8 +285,8 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
                   <Bot size={16} className="text-white" />
                 </div>
-                <div className="bg-slate-100 p-3 rounded-2xl">
-                  <div className="flex gap-1">
+                <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                  <div className="flex gap-2">
                     <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                     <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
@@ -227,14 +298,14 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-slate-200">
+          <div className="p-4 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
             <div className="flex gap-2">
               <textarea
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask about the product reviews..."
-                className="flex-1 p-3 border border-slate-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 p-3 border border-slate-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 rows={2}
                 disabled={isLoading}
               />
