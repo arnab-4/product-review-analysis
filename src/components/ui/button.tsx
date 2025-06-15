@@ -1,7 +1,7 @@
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
@@ -33,6 +33,10 @@ const buttonVariants = cva(
   }
 )
 
+// Add a reusable animated class for buttons:
+const animatedButton =
+  "transition-transform duration-100 hover:scale-105 active:scale-95 will-change-transform"
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
@@ -44,7 +48,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(animatedButton, buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
       />

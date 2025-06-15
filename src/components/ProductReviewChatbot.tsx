@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, Send, Bot, User, X, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -188,49 +189,62 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300"
+          className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl hover:scale-105 active:scale-95 transition-all duration-300 border-4 border-white"
           size="lg"
+          aria-label={isOpen ? "Close chatbot" : "Open chatbot"}
         >
-          {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+          {isOpen ? <X size={28} className="transition-transform duration-200 hover:rotate-90" /> : <MessageCircle size={28} />}
         </Button>
       </div>
 
       {/* Chatbot Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-40 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-24 right-4 z-40 w-[98vw] max-w-md mx-auto md:right-6 h-[70vh] max-h-[600px] bg-gradient-to-br from-white via-blue-50 to-indigo-50 rounded-2xl shadow-2xl border border-slate-200 flex flex-col animate-in fade-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-t-2xl">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <Bot size={18} />
-              </div>
-              <div>
-                <h3 className="font-semibold">Review Assistant</h3>
-                <p className="text-sm text-blue-100">Ask about {productName}</p>
-              </div>
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-t-2xl shadow-md flex items-center gap-3">
+            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center border border-white/30">
+              <Bot size={18} />
             </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-base">Review Assistant</h3>
+              <p className="text-xs text-blue-100">Ask about {productName}</p>
+            </div>
+            <button
+              aria-label="Close chatbot"
+              onClick={() => setIsOpen(false)}
+              className="rounded-full hover:bg-white/10 p-1.5 transition-colors duration-150"
+            >
+              <X size={19} />
+            </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
+          <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 bg-transparent backdrop-blur-sm">
+            {messages.map((message, i) => (
               <div
                 key={message.id}
-                className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-3 ${
+                  message.type === 'user' ? 'justify-end' : 'justify-start'
+                } animate-fade-in`}
+                style={{ animationDelay: `${i * 40}ms` }}
               >
                 {message.type === 'bot' && (
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center flex-shrink-0 shadow shadow-blue-100">
                     <Bot size={16} className="text-white" />
                   </div>
                 )}
                 
                 <div className={`max-w-[85%] ${message.type === 'user' ? 'order-1' : 'order-2'}`}>
                   <div
-                    className={`p-4 rounded-2xl ${
-                      message.type === 'user'
-                        ? 'bg-blue-600 text-white ml-auto'
-                        : 'bg-slate-50 text-slate-800 border border-slate-200'
-                    }`}
+                    className={`
+                      p-4 rounded-2xl 
+                      transition-colors duration-300
+                      ${message.type === 'user' ? 
+                        'bg-blue-600 text-white ml-auto shadow-lg' : 
+                        'bg-white/90 text-slate-800 border border-slate-100 shadow'
+                      }
+                      ${message.type === 'bot' ? 'bot-bubble border-b-4 border-blue-200' : ''}
+                    `}
                   >
                     {message.type === 'bot' ? (
                       <MarkdownMessage content={message.content} />
@@ -240,7 +254,7 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
                   </div>
                   
                   {message.metadata && (
-                    <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 text-xs">
+                    <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 text-xs shadow border-b-4">
                       <div className="flex items-center gap-1 mb-2">
                         <BarChart3 size={14} className="text-blue-600" />
                         <span className="font-semibold text-blue-800">Analysis Summary</span>
@@ -273,7 +287,7 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
                 </div>
 
                 {message.type === 'user' && (
-                  <div className="w-8 h-8 bg-slate-300 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center flex-shrink-0 shadow shadow-slate-100">
                     <User size={16} className="text-slate-600" />
                   </div>
                 )}
@@ -281,11 +295,11 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
             ))}
             
             {isLoading && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+              <div className="flex gap-3 animate-fade-in">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center shadow shadow-blue-100">
                   <Bot size={16} className="text-white" />
                 </div>
-                <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+                <div className="bg-white/90 border border-slate-100 p-4 rounded-2xl shadow">
                   <div className="flex gap-2">
                     <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -298,25 +312,26 @@ const ProductReviewChatbot = ({ productId, productName }: ProductReviewChatbotPr
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-slate-200 bg-slate-50 rounded-b-2xl">
-            <div className="flex gap-2">
-              <textarea
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask about the product reviews..."
-                className="flex-1 p-3 border border-slate-300 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                rows={2}
-                disabled={isLoading}
-              />
-              <Button
-                onClick={sendMessage}
-                disabled={!inputText.trim() || isLoading}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 p-3 rounded-xl"
-              >
-                <Send size={18} />
-              </Button>
-            </div>
+          <div className="p-3 border-t border-slate-200 bg-white/80 rounded-b-2xl backdrop-blur flex items-center">
+            <textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask about the product reviews..."
+              className="flex-1 p-3 border border-slate-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white/60"
+              rows={2}
+              disabled={isLoading}
+              style={{ transition: 'box-shadow 0.2s' }}
+            />
+            <Button
+              onClick={sendMessage}
+              disabled={!inputText.trim() || isLoading}
+              className={`ml-2 flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 p-3 rounded-xl shadow-md transition-all duration-200 active:scale-95 ${(!inputText.trim() || isLoading) ? "opacity-60 cursor-not-allowed" : ""}`}
+              aria-label="Send"
+              type="button"
+            >
+              <Send size={18} />
+            </Button>
           </div>
         </div>
       )}

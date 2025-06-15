@@ -36,12 +36,48 @@ export type Database = {
         }
         Relationships: []
       }
+      review_votes: {
+        Row: {
+          created_at: string
+          id: string
+          review_id: string
+          updated_at: string
+          user_ip: string
+          vote_type: Database["public"]["Enums"]["vote_type"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          review_id: string
+          updated_at?: string
+          user_ip: string
+          vote_type: Database["public"]["Enums"]["vote_type"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          review_id?: string
+          updated_at?: string
+          user_ip?: string
+          vote_type?: Database["public"]["Enums"]["vote_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_votes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           analysis_details: Json | null
           created_at: string
           final_confidence: number | null
           has_rating_mismatch: boolean | null
+          helpful_count: number
           id: string
           ml_confidence: number | null
           ml_sentiment: string | null
@@ -52,12 +88,14 @@ export type Database = {
           review_text: string | null
           sentiment: string | null
           sentiment_source: string | null
+          unhelpful_count: number
         }
         Insert: {
           analysis_details?: Json | null
           created_at?: string
           final_confidence?: number | null
           has_rating_mismatch?: boolean | null
+          helpful_count?: number
           id?: string
           ml_confidence?: number | null
           ml_sentiment?: string | null
@@ -68,12 +106,14 @@ export type Database = {
           review_text?: string | null
           sentiment?: string | null
           sentiment_source?: string | null
+          unhelpful_count?: number
         }
         Update: {
           analysis_details?: Json | null
           created_at?: string
           final_confidence?: number | null
           has_rating_mismatch?: boolean | null
+          helpful_count?: number
           id?: string
           ml_confidence?: number | null
           ml_sentiment?: string | null
@@ -84,6 +124,7 @@ export type Database = {
           review_text?: string | null
           sentiment?: string | null
           sentiment_source?: string | null
+          unhelpful_count?: number
         }
         Relationships: [
           {
@@ -128,7 +169,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      vote_type: "up" | "down"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -243,6 +284,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      vote_type: ["up", "down"],
+    },
   },
 } as const

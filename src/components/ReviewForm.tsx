@@ -1,10 +1,14 @@
-
 import { useState } from "react";
-import { Star, Brain, Cpu, CheckCircle, AlertTriangle } from "lucide-react";
+import { Star, Brain, Cpu, CheckCircle, AlertTriangle, Check, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useSubmitReview } from "@/hooks/useReviews";
+import LowRatingConfirmDialog from "./LowRatingConfirmDialog";
+
+// New: animated error utility
+const errorAnimation =
+  "animate-shake text-red-600 transition-all duration-300";
 
 interface ReviewFormProps {
   productId: string;
@@ -16,13 +20,20 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [lastSubmissionResult, setLastSubmissionResult] = useState<any>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showLowRatingDialog, setShowLowRatingDialog] = useState(false);
   const { toast } = useToast();
   const submitReview = useSubmitReview();
 
+  // Reset errors on input
+  const clearErrors = () => setFormError(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (rating === 0) {
+      setFormError("Please select a star rating before submitting.");
       toast({
         title: "Rating Required",
         description: "Please select a star rating before submitting.",
@@ -32,6 +43,7 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
     }
 
     if (reviewText.trim().length < 10) {
+      setFormError("Please write at least 10 characters for your review.");
       toast({
         title: "Review Too Short",
         description: "Please write at least 10 characters for your review.",
@@ -40,6 +52,19 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
       return;
     }
 
+    // Check if rating is below 3 stars and show confirmation dialog
+    if (rating < 3) {
+      setShowLowRatingDialog(true);
+      return;
+    }
+
+    // Proceed with submission
+    await submitReviewProcess();
+  };
+
+  const submitReviewProcess = async () => {
+    setFormError(null);
+
     try {
       const result = await submitReview.mutateAsync({
         productId,
@@ -47,31 +72,35 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
         reviewText: reviewText.trim(),
         productName
       });
-      
+
       setLastSubmissionResult(result);
-      
+
       const analysis = result.sentimentAnalysis;
       let toastDescription = `Your review has been analyzed with ${(analysis.finalConfidence * 100).toFixed(1)}% confidence.`;
-      
+
       if (analysis.modelsAgreed) {
         toastDescription += " Both models agreed - using ML confidence!";
       } else {
         toastDescription += " Models disagreed - using justified confidence.";
       }
-      
+
       if (analysis.hasRatingMismatch) {
         toastDescription += " ⚠️ Rating-review mismatch detected.";
       }
-      
+
       toast({
         title: "Review Submitted Successfully!",
         description: toastDescription,
       });
 
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 1800);
+
       setRating(0);
       setReviewText("");
-      
+
     } catch (error) {
+      setFormError("Failed to submit review. Please try again.");
       console.error('Review submission error:', error);
       toast({
         title: "Error",
@@ -81,19 +110,32 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
     }
   };
 
+  const handleLowRatingConfirm = () => {
+    setShowLowRatingDialog(false);
+    submitReviewProcess();
+  };
+
+  const handleLowRatingCancel = () => {
+    setShowLowRatingDialog(false);
+  };
+
+  // Animation for the error state using shake (Tailwind animation)
+  // Add keyframes in tailwind.config if not present:
+  // "shake": { "0%, 100%": { transform: "translateX(0)" }, "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-8px)" }, "20%, 40%, 60%, 80%": { transform: "translateX(8px)" } }
+
   const renderStars = () => {
     return Array.from({ length: 5 }, (_, index) => {
       const starNumber = index + 1;
       const isActive = starNumber <= (hoveredRating || rating);
-      
+
       return (
         <button
           key={index}
           type="button"
           className="transition-colors duration-150"
-          onMouseEnter={() => setHoveredRating(starNumber)}
+          onMouseEnter={() => { setHoveredRating(starNumber); clearErrors(); }}
           onMouseLeave={() => setHoveredRating(0)}
-          onClick={() => setRating(starNumber)}
+          onClick={() => { setRating(starNumber); clearErrors(); }}
         >
           <Star
             size={24}
@@ -124,8 +166,8 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
     <div className="space-y-6">
       <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200/50">
         <h3 className="text-xl font-bold text-slate-800 mb-4">Write a Review</h3>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="space-y-4 relative">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Your Rating
@@ -146,7 +188,7 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
             </label>
             <Textarea
               value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
+              onChange={e => { setReviewText(e.target.value); clearErrors(); }}
               placeholder="Share your experience with this product..."
               className="min-h-[100px]"
               maxLength={500}
@@ -156,15 +198,44 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
             </div>
           </div>
 
-          <Button 
-            type="submit" 
+          {/* Animated error feedback */}
+          {formError && (
+            <div className={`flex items-center gap-2 mt-2 text-sm ${errorAnimation}`}>
+              <AlertTriangle className="w-4 h-4" />
+              <span>{formError}</span>
+            </div>
+          )}
+
+          {/* Animated Success Checkmark */}
+          {showSuccess && (
+            <div className="absolute left-0 right-0 mx-auto flex flex-col items-center pointer-events-none z-10 top-2">
+              <Check
+                className="text-green-500 w-12 h-12 animate-bounce-in"
+                strokeWidth={3}
+              />
+              <span className="text-green-700 font-semibold mt-1 animate-fade-in">
+                Thank you for your review!
+              </span>
+            </div>
+          )}
+
+          <Button
+            type="submit"
             disabled={submitReview.isPending || rating === 0 || reviewText.trim().length < 10}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 relative"
           >
-            {submitReview.isPending ? "Analyzing with Advanced AI..." : "Submit Review"}
+            {/* Branded loader spinner & success check */}
+            {submitReview.isPending ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader className="w-5 h-5 animate-spin text-white" />
+                <span>Analyzing with Advanced AI...</span>
+              </span>
+            ) : (
+              "Submit Review"
+            )}
           </Button>
         </form>
-        
+
         <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
           <p className="text-xs text-blue-700 font-medium">
             🧠 Advanced AI Analysis: Dual-model sentiment detection with intelligent confidence scoring
@@ -174,6 +245,14 @@ const ReviewForm = ({ productId, productName }: ReviewFormProps) => {
           </p>
         </div>
       </div>
+
+      {/* Low Rating Confirmation Dialog */}
+      <LowRatingConfirmDialog
+        isOpen={showLowRatingDialog}
+        onConfirm={handleLowRatingConfirm}
+        onCancel={handleLowRatingCancel}
+        rating={rating}
+      />
 
       {/* Enhanced Analysis Display */}
       {lastSubmissionResult?.sentimentAnalysis && (

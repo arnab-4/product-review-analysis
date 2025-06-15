@@ -10,6 +10,7 @@ import SentimentChart from "@/components/SentimentChart";
 import ProductInsights from "@/components/ProductInsights";
 import ReviewAnalysisModal from "@/components/ReviewAnalysisModal";
 import ProductReviewChatbot from "@/components/ProductReviewChatbot";
+import ReviewSentimentTrendChart from "@/components/ReviewSentimentTrendChart";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -32,7 +33,15 @@ const ProductDetails = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          {/* Branded loader spinner */}
+          <div className="flex items-center justify-center mb-4">
+            <span className="p-3 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-100">
+              <svg className="animate-spin w-12 h-12 text-blue-600" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+              </svg>
+            </span>
+          </div>
           <p className="text-slate-600">Loading product...</p>
         </div>
       </div>
@@ -162,10 +171,12 @@ const ProductDetails = () => {
         {/* Enhanced Analysis Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Product Insights */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-8">
             <ProductInsights product={product} reviews={reviews} />
+            <ReviewSentimentTrendChart reviews={reviews} />
+          
           </div>
-
+          
           {/* Sentiment Chart */}
           {(product.total_reviews || 0) > 0 && (
             <div className="lg:col-span-1">
